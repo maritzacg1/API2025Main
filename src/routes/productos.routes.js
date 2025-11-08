@@ -9,30 +9,27 @@ import {
     patchProducto,
     deleteProducto
 } from '../controladores/productosCtrl.js';
+import { verifyToken } from "../jwt/verifytoken.js";
 
-import { verifyToken } from "../jwt/verifytoken.js"; // 🔐 importa el middleware
-
-// Configurar multer para almacenar las imágenes
+// Configurar multer
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, 'uploads'); // carpeta donde se guardan las imágenes
+        cb(null, 'uploads');
     },
     filename: (req, file, cb) => {
         cb(null, `${Date.now()}-${file.originalname}`);
     }
 });
-
 const uploads = multer({ storage });
+
 const router = Router();
 
-// 🧩 Rutas protegidas con verifyToken
-router.get('/productos', verifyToken, getProductos);       // select
-router.get('/productos/:id', verifyToken, getproductosxid); // select por id
-
-// 🔓 Rutas abiertas (puedes protegerlas también si quieres)
-router.post('/productos', verifyToken, upload.single('prod_imagen'), postProducto);  // insert
-router.put('/productos/:id',verifyToken, upload.single('prod_imagen'), putProducto);   // update
-router.patch('/productos/:id',verifyToken, patchProducto);  // update parcial
-router.delete('/productos/:id', verifyToken, deleteProducto); // delete
+// ✅ Aquí ya no repitas /productos
+router.get('/', verifyToken, getProductos);
+router.get('/:id', verifyToken, getproductosxid);
+router.post('/', verifyToken, upload.single('prod_imagen'), postProducto);
+router.put('/:id', verifyToken, upload.single('prod_imagen'), putProducto);
+router.patch('/:id', verifyToken, patchProducto);
+router.delete('/:id', verifyToken, deleteProducto);
 
 export default router;
