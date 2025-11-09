@@ -26,21 +26,24 @@ export const getproductosxid = async (req, res) => {
   }
 };
 
-// 🔹 Registrar nuevo producto (CORREGIDO)
+// 🔹 Registrar nuevo producto (híbrido local/Cloudinary)
 export const postProducto = async (req, res) => {
   try {
-    const { prod_codigo, prod_nombre, prod_stock, prod_precio, prod_activo } = req.body;
-    const prod_imagen = req.file ? `/uploads/${req.file.filename}` : null;
+    const { prod_codigo, prod_nombre, prod_stock, prod_precio, prod_activo, prod_imagen } = req.body;
 
-    console.log("Datos del producto:", req.body);
-    console.log("Archivo de imagen:", req.file);
+    // Si envían URL (Cloudinary), usarla; si envían archivo local, usar path
+    let imagenFinal = null;
+    if (prod_imagen && prod_imagen.startsWith('http')) {
+      imagenFinal = prod_imagen;
+    } else if (req.file) {
+      imagenFinal = `/uploads/${req.file.filename}`;
+    }
 
-    // ✅ Verificar si ya existe un producto con el mismo código
+    // Verificar si ya existe el código
     const [existe] = await conmysql.query(
       "SELECT * FROM productos WHERE prod_codigo = ?",
       [prod_codigo]
     );
-
     if (existe.length > 0) {
       return res.status(409).json({
         id: 0,
@@ -48,10 +51,9 @@ export const postProducto = async (req, res) => {
       });
     }
 
-    // ✅ Solo un INSERT correcto
     const [row] = await conmysql.query(
       "INSERT INTO productos (prod_codigo, prod_nombre, prod_stock, prod_precio, prod_activo, prod_imagen) VALUES (?, ?, ?, ?, ?, ?)",
-      [prod_codigo, prod_nombre, prod_stock, prod_precio, prod_activo, prod_imagen]
+      [prod_codigo, prod_nombre, prod_stock, prod_precio, prod_activo, imagenFinal]
     );
 
     res.send({
@@ -64,22 +66,22 @@ export const postProducto = async (req, res) => {
   }
 };
 
-// 🔹 Editar producto existente
+// 🔹 Editar producto existente (híbrido local/Cloudinary)
 export const putProducto = async (req, res) => {
   try {
     const { id } = req.params;
-    const { prod_codigo, prod_nombre, prod_stock, prod_precio, prod_activo } = req.body;
+    const { prod_codigo, prod_nombre, prod_stock, prod_precio, prod_activo, prod_imagen } = req.body;
 
-    let prod_imagen = req.file ? `/uploads/${req.file.filename}` : null;
-
-    // Si no se envía nueva imagen, mantener la actual
-    if (!req.file) {
+    let imagenFinal = null;
+    if (prod_imagen && prod_imagen.startsWith('http')) {
+      imagenFinal = prod_imagen;
+    } else if (req.file) {
+      imagenFinal = `/uploads/${req.file.filename}`;
+    } else {
+      // Mantener la imagen actual si no envían nada
       const [rows] = await conmysql.query("SELECT prod_imagen FROM productos WHERE prod_id = ?", [id]);
-      if (rows && rows.length > 0) {
-        prod_imagen = rows[0].prod_imagen;
-      } else {
-        return res.status(404).json({ message: "Producto no encontrado" });
-      }
+      if (rows && rows.length > 0) imagenFinal = rows[0].prod_imagen;
+      else return res.status(404).json({ message: "Producto no encontrado" });
     }
 
     const [result] = await conmysql.query(
@@ -87,7 +89,7 @@ export const putProducto = async (req, res) => {
        SET prod_codigo = ?, prod_nombre = ?, prod_stock = ?, 
            prod_precio = ?, prod_activo = ?, prod_imagen = ? 
        WHERE prod_id = ?`,
-      [prod_codigo, prod_nombre, prod_stock, prod_precio, prod_activo, prod_imagen, id]
+      [prod_codigo, prod_nombre, prod_stock, prod_precio, prod_activo, imagenFinal, id]
     );
 
     if (result.affectedRows <= 0) {
