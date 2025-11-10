@@ -27,13 +27,12 @@ const corsOptions = {
   credentials: true
 };
 
-app.use(cors(corsOptions));
-
 
 // Crear instancia de Express
 const app = express();
 
 // Aplicar middlewares
+app.use(cors(corsOptions));
 app.use(express.json()); // interpretar objetos JSON
 app.use(express.urlencoded({ extended: true })); // para formularios
 
