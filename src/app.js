@@ -16,20 +16,24 @@ const __dirname = path.dirname(__filename);
 // ✅ Configurar CORS correctamente
 const corsOptions = {
   origin: [
-    "http://localhost:8100",       // navegador Ionic
-    "capacitor://localhost",       // app Android/iOS
-    "ionic://localhost",           // app móvil
-    "https://api2025main.onrender.com" // dominio del backend (Render)
+    "http://localhost:8100",
+    "capacitor://localhost",
+    "ionic://localhost",
+    "http://localhost",
+    "https://api2025main.onrender.com"
   ],
   methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
+  allowedHeaders: ["Content-Type", "Authorization"],
   credentials: true
 };
+
+app.use(cors(corsOptions));
+
 
 // Crear instancia de Express
 const app = express();
 
 // Aplicar middlewares
-app.use(cors(corsOptions));
 app.use(express.json()); // interpretar objetos JSON
 app.use(express.urlencoded({ extended: true })); // para formularios
 
