@@ -8,6 +8,8 @@ import clientesRoutes from './routes/clientes.routes.js';
 import productosRoutes from './routes/productos.routes.js';
 import usuariosRoutes from './routes/usuarios.routes.js';
 import pedidosRoutes from './routes/pedidos.routes.js';
+// Crear instancia de Express
+const app = express();
 
 // Definir los módulos de entrada
 const __filename = fileURLToPath(import.meta.url);
@@ -28,8 +30,6 @@ const corsOptions = {
 };
 
 
-// Crear instancia de Express
-const app = express();
 
 // Aplicar middlewares
 app.use(cors(corsOptions));
