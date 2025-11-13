@@ -8,15 +8,16 @@ import clientesRoutes from './routes/clientes.routes.js';
 import productosRoutes from './routes/productos.routes.js';
 import usuariosRoutes from './routes/usuarios.routes.js';
 import pedidosRoutes from './routes/pedidos.routes.js';
-// Crear instancia de Express
+import loginRoutes from './routes/login.routes.js'; // ✅ nuevo
+
 const app = express();
 
 // Definir los módulos de entrada
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// ✅ Configurar CORS correctamente
-const corsOptions = {
+// Configurar CORS
+app.use(cors({
   origin: [
     "http://localhost:8100",
     "capacitor://localhost",
@@ -24,17 +25,12 @@ const corsOptions = {
     "http://localhost",
     "https://api2025main.onrender.com"
   ],
-  methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
+  methods: ["GET", "POST", "PUT", "DELETE"],
   allowedHeaders: ["Content-Type", "Authorization"],
-  credentials: true
-};
+}));
 
-
-
-// Aplicar middlewares
-app.use(cors(corsOptions));
-app.use(express.json()); // interpretar objetos JSON
-app.use(express.urlencoded({ extended: true })); // para formularios
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 // Servir archivos estáticos (imágenes, etc.)
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
@@ -42,14 +38,13 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 // Rutas principales
 app.use('/api/clientes', clientesRoutes);
 app.use('/api/productos', productosRoutes);
-app.use('/api', usuariosRoutes);
-app.use('/api', pedidosRoutes);
+app.use('/api/pedidos', pedidosRoutes);
+app.use('/api/usuarios', usuariosRoutes);
+app.use('/api', loginRoutes); // ✅ login agregado
 
-// Ruta por defecto (404)
-app.use((req, res, next) => {
-  res.status(404).json({
-    message: 'Endpoint not found'
-  });
+// Ruta por defecto
+app.use((req, res) => {
+  res.status(404).json({ message: 'Endpoint not found' });
 });
 
 export default app;
