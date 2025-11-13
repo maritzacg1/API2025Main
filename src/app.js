@@ -18,15 +18,9 @@ const __dirname = path.dirname(__filename);
 
 // Configurar CORS
 app.use(cors({
-  origin: [
-    "http://localhost:8100",
-    "capacitor://localhost",
-    "ionic://localhost",
-    "http://localhost",
-    "https://api2025main.onrender.com"
-  ],
-  methods: ["GET", "POST", "PUT", "DELETE"],
-  allowedHeaders: ["Content-Type", "Authorization"],
+  origin: '*', // o la URL de tu app si quieres restringir
+  methods: ['GET','POST','PUT','DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
 app.use(express.json());

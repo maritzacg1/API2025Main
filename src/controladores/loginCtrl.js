@@ -1,15 +1,13 @@
 import jwt from 'jsonwebtoken';
-import { createHash } from 'crypto';
 import { conmysql } from '../db.js';
 import { JWT_SECRET } from '../config.js';
 
-// Convertir texto a MD5
-const md5Hash = (texto) => createHash('md5').update(texto).digest('hex');
-
 export const login = async (req, res) => {
-  const { usuario, clave } = req.body;
+  console.log('🔹 Cuerpo recibido:', req.body);
 
-  if (!usuario || !clave) {
+  const { usr_usuario, usr_clave } = req.body;
+
+  if (!usr_usuario || !usr_clave) {
     return res.status(400).json({ message: 'Debe ingresar usuario y clave' });
   }
 
@@ -17,7 +15,7 @@ export const login = async (req, res) => {
     // Buscar usuario activo
     const [rows] = await conmysql.query(
       'SELECT * FROM usuarios WHERE usr_usuario = ? AND usr_activo = 1',
-      [usuario]
+      [usr_usuario]
     );
 
     if (rows.length === 0) {
@@ -25,9 +23,9 @@ export const login = async (req, res) => {
     }
 
     const user = rows[0];
-    const claveMD5 = md5Hash(clave);
 
-    if (user.usr_clave !== claveMD5) {
+    // 🔥 SIN MD5 → comparar tal cual viene
+    if (user.usr_clave !== usr_clave) {
       return res.status(401).json({ message: 'Contraseña incorrecta' });
     }
 
@@ -50,7 +48,7 @@ export const login = async (req, res) => {
     });
 
   } catch (error) {
-    console.error('Error en login:', error);
+    console.error('❌ Error en login:', error);
     res.status(500).json({ message: 'Error interno del servidor' });
   }
 };

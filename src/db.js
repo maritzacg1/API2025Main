@@ -12,9 +12,12 @@ export const conmysql = createPool({
   queueLimit: 0,
 });
 
-try {
-  const [rows] = await conmysql.query('SELECT 1');
-  console.log('✅ Conectado correctamente a la base de datos');
-} catch (error) {
-  console.error('❌ Error al conectar a la base de datos:', error);
-}
+// ✅ Probar la conexión sin romper el módulo
+(async () => {
+  try {
+    const [rows] = await conmysql.query('SELECT 1');
+    console.log('✅ Conectado correctamente a la base de datos');
+  } catch (error) {
+    console.error('❌ Error al conectar a la base de datos:', error);
+  }
+})();
