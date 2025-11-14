@@ -26,13 +26,13 @@ const uploads = multer({ storage });
 const router = Router();
 
 // 🧩 Rutas protegidas con verifyToken
-router.get('/', verifyToken, getProductos);       // select
-router.get('/:id', verifyToken, getproductosxid); // select por id
+router.get('/', getProductos);       // select
+router.get('/:id', getproductosxid); // select por id
 
 // 🔓 Rutas abiertas (puedes protegerlas también si quieres)
-router.post('/', verifyToken, upload.single('prod_imagen'), postProducto);  // insert
-router.put('/:id',verifyToken, upload.single('prod_imagen'), putProducto);   // update
-router.patch('/:id',verifyToken, patchProducto);  // update parcial
-router.delete('/:id', verifyToken, deleteProducto); // delete
-
-export default router;
+router.get('/productos',getProductos)
+router.get('/productos/:id',getProductosxId)
+router.post('/productos',postProductos)
+router.put('/productos/:id',putProductosxId)
+router.delete('/productos/:id',deleteProducto)
+export default router

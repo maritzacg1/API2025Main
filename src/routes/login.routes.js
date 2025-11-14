@@ -1,8 +1,7 @@
-import { Router } from 'express';
-import { login } from '../controladores/loginCtrl.js';
+import { Router } from "express";
+import {login} from '../controladores/loginCtrl.js'
 
-const router = Router();
+const router=Router();
 
-router.post('/usuarios', login); // Endpoint: /api/usuarios
-
-export default router;
+router.post('/usuarios',login)
+export default router

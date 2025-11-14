@@ -6,7 +6,7 @@ import { verifyToken } from "../jwt/verifytoken.js"; //  Importamos el middlewar
 const router = Router();
 
 //Rutas abiertas (puedes protegerlas también si quieres)
-router.post("/pedidos", verifyToken,postPedido);  // insertar
+router.post("/pedidos",postPedido);  // insertar
 router.get("/pedidos", getPedidos);        // listar todos
 router.get("/pedidos/:id", getPedidoById); // obtener uno por ID
 
