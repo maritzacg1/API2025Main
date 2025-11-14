@@ -1,44 +1,43 @@
 import express from 'express';
+import fileUpload from 'express-fileupload';
 import cors from 'cors';
-import path from 'path';
-import { fileURLToPath } from 'url';
 
-// Importar las rutas
+// importar las rutas
 import clientesRoutes from './routes/clientes.routes.js';
 import productosRoutes from './routes/productos.routes.js';
-import usuariosRoutes from './routes/usuarios.routes.js';
+import loginRoutes from './routes/login.routes.js';
 import pedidosRoutes from './routes/pedidos.routes.js';
-import loginRoutes from './routes/login.routes.js'; // ✅ nuevo
 
 const app = express();
 
-// Definir los módulos de entrada
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-// Configurar CORS
 app.use(cors({
   origin: '*', // o la URL de tu app si quieres restringir
   methods: ['GET','POST','PUT','DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
+
+// Middleware para subir archivos
+app.use(fileUpload({
+  useTempFiles: true,      // permite usar archivos temporales
+  tempFileDir: '/tmp',     // carpeta temporal para los archivos
+  createParentPath: true
+}));
+
+// Middleware para parsear JSON
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
 
-// Servir archivos estáticos (imágenes, etc.)
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+// Rutas de la API
+app.use('/api', pedidosRoutes)
+app.use('/api', clientesRoutes);
+app.use('/api', productosRoutes);
+app.use('/api', loginRoutes);
 
-// Rutas principales
-app.use('/api/clientes', clientesRoutes);
-app.use('/api/productos', productosRoutes);
-app.use('/api/pedidos', pedidosRoutes);
-app.use('/api/usuarios', usuariosRoutes);
-app.use('/api', loginRoutes); // ✅ login agregado
-
-// Ruta por defecto
-app.use((req, res) => {
-  res.status(404).json({ message: 'Endpoint not found' });
+// Manejar endpoints no encontrados
+app.use((req, res, next) => {
+  res.status(404).json({
+    message: 'Endpoint not found'
+  });
 });
 
 export default app;

@@ -1,160 +1,92 @@
-import { conmysql } from "../db.js";
+import { conmysql } from '../db.js'
 
-// ✅ Obtener todos los clientes
-export const getobetenerClientes = async (req, res) => {
-  try {
-    const [result] = await conmysql.query("SELECT * FROM clientes");
-    res.json({ cant: result.length, data: result });
-  } catch (error) {
-    return res.status(500).json({
-      message: "Error al obtener los clientes",
-      error: error.message,
-    });
-  }
-};
+export const prueba = (req, resp) => { resp.send('prueba con exito') };
 
-// ✅ Obtener cliente por ID
+export const getClientes = async (req, res) => {
+    try {
+        const [result] = await conmysql.query('select * from clientes')
+        res.json({
+            cant: result.length,
+            data: result
+        })
+       /* res.json(result) */
+    } catch (error) {
+        return res.status(500).json({ message: "Error en el servidor" })
+    }
+}
+
 export const getClientesxId = async (req, res) => {
-  try {
-    const [result] = await conmysql.query(
-      "SELECT * FROM clientes WHERE cli_id = ?",
-      [req.params.id]
-    );
-    if (result.length <= 0)
-      return res.status(404).json({
-        cli_id: 0,
-        message: "Cliente no encontrado",
-      });
-    res.json(result[0]);
-  } catch (error) {
-    return res.status(500).json({
-      message: "Error al obtener el cliente",
-      error: error.message,
-    });
-  }
-};
-
-// ✅ 🔍 Obtener cliente por CÉDULA
-export const getClientePorCedula = async (req, res) => {
-  try {
-    const { cedula } = req.params;
-    const [result] = await conmysql.query(
-      "SELECT * FROM clientes WHERE cli_identificacion = ?",
-      [cedula]
-    );
-
-    if (result.length === 0) {
-      return res.status(404).json({ message: "Cliente no encontrado" });
+    try {
+        const [result] = await conmysql.query('select * from clientes where cli_id=?',[req.params.id])
+        if(result.length<=0)return res.json({
+            cant: 0,
+            message: "Cliente no encontrado"
+        })
+        res.json({
+            cant: result.length,
+            data: result[0]
+        })
+    } catch (error) {
+        return res.status(500).json({ message: "Error en el servidor" })
     }
+}
 
-    res.json(result[0]);
-  } catch (error) {
-    return res.status(500).json({
-      message: "Error al obtener cliente por cédula",
-      error: error.message,
-    });
-  }
-};
-
-// ✅ Insertar nuevo cliente
-export const postClientes = async (req, res) => {
-  try {
-    const {
-      cli_identificacion,
-      cli_nombre,
-      cli_telefono,
-      cli_correo,
-      cli_direccion,
-      cli_pais,
-      cli_ciudad,
-    } = req.body;
-
+//funcion oara insertar un cliente
+export const postClientes= async (req,res) =>{
+    try {
+    const {cli_identificacion, cli_nombre, cli_telefono, cli_correo, cli_direccion, cli_pais, cli_ciudad}=req.body
+    /* console.log(req.body) */
     const [result] = await conmysql.query(
-      "INSERT INTO clientes(cli_identificacion, cli_nombre, cli_telefono, cli_correo, cli_direccion, cli_pais, cli_ciudad) VALUES (?, ?, ?, ?, ?, ?, ?)",
-      [
-        cli_identificacion,
-        cli_nombre,
-        cli_telefono,
-        cli_correo,
-        cli_direccion,
-        cli_pais,
-        cli_ciudad,
-      ]
-    );
-    res.send({ id: result.insertId });
-  } catch (error) {
-    return res.status(500).json({
-      message: "Error al insertar cliente",
-      error: error.message,
-    });
-  }
-};
-
-// ✅ Actualizar cliente (PUT)
-export const putClientes = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const {
-      cli_identificacion,
-      cli_nombre,
-      cli_telefono,
-      cli_correo,
-      cli_direccion,
-      cli_pais,
-      cli_ciudad,
-    } = req.body;
-
-    const [result] = await conmysql.query(
-      "UPDATE clientes SET cli_identificacion=?, cli_nombre=?, cli_telefono=?, cli_correo=?, cli_direccion=?, cli_pais=?, cli_ciudad=? WHERE cli_id=?",
-      [
-        cli_identificacion,
-        cli_nombre,
-        cli_telefono,
-        cli_correo,
-        cli_direccion,
-        cli_pais,
-        cli_ciudad,
-        id,
-      ]
-    );
-
-    if (result.affectedRows === 0)
-      return res.status(404).json({ message: "Cliente no encontrado" });
-
-    const [row] = await conmysql.query(
-      "SELECT * FROM clientes WHERE cli_id=?",
-      [id]
-    );
-    res.json(row[0]);
-  } catch (error) {
-    return res.status(500).json({
-      message: "Error al actualizar cliente",
-      error: error.message,
-    });
-  }
-};
-
-// ✅ Eliminar cliente
-export const deleteClientes = async (req, res) => {
-  try {
-    const [result] = await conmysql.query(
-      "DELETE FROM clientes WHERE cli_id = ?",
-      [req.params.id]
-    );
-
-    if (result.affectedRows === 0) {
-      return res.status(404).json({
-        message: "No se encontró el cliente",
-      });
+        'insert into clientes(cli_identificacion, cli_nombre, cli_telefono, cli_correo, cli_direccion, cli_pais, cli_ciudad) values (?,?,?,?,?,?,?)',
+        [cli_identificacion, cli_nombre, cli_telefono, cli_correo, cli_direccion, cli_pais, cli_ciudad]
+    )
+    res.send({cli_id:result.insertId})
+    } catch (error) {
+        return res.status(500).json({ message: "Error en el servidor" })
     }
+}
 
-    res.sendStatus(204);
-  } catch (error) {
-    return res.status(500).json({
-      message: "Error al eliminar el cliente",
-      error: error.message,
-    });
-  }
-};
+//funcion para actualizar clientes 
+export const putClientesxId= async (req,res) =>{
+    try {
+    const {id}=req.params
+    const {cli_identificacion, cli_nombre, cli_telefono, cli_correo, cli_direccion, cli_pais, cli_ciudad}=req.body
+    /* console.log(req.body) */
+    const [result] = await conmysql.query(
+        'update clientes set cli_identificacion=?, cli_nombre=?, cli_telefono=?, cli_correo=?, cli_direccion=?, cli_pais=?, cli_ciudad=? where cli_id=?',
+        [cli_identificacion, cli_nombre, cli_telefono, cli_correo, cli_direccion, cli_pais, cli_ciudad, id]
+    )
+    if(result.affectedRows<=0)return res.status(404).json({
+            message: "Cliente no encontrado"
+        })
+        const [fila] = await conmysql.query('select * from clientes where cli_id=?',[id])
+        res.json(fila[0])
+    } catch (error) {
+        return res.status(500).json({ message: "Error en el servidor" })
+    }
+}
+
+//funcion para eliminar clientes 
+export const deleteCliente= async(req, resp) =>{
+    try {
+        const {id} =req.params
+        console.log(id)
+
+        const [result] = await conmysql.query(
+            'DELETE FROM clientes WHERE cli_id= ?', [id]
+        )
+
+        if(result.affectedRows <= 0) return resp.status(404).json({
+            message:"Cliente no encontrado"
+        })
+
+        resp.json({
+            message:"Cliente Eliminado"
+        })
+        
+    } catch (error) {
+        return resp.status(500).json({message:"error en el servidor"})
+    }
+}
 
 

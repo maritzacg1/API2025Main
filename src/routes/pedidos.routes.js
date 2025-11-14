@@ -1,7 +1,7 @@
 import { Router } from "express";
 import {getPedidos, getPedidoById,postPedido} from "../controladores/pedidosCtrl.js";
 
-import { verifyToken } from "../jwt/verifytoken.js"; //  Importamos el middleware de verificación
+//import { verifyToken } from "../jwt/verifytoken.js"; //  Importamos el middleware de verificación
 
 const router = Router();
 
