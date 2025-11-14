@@ -4,7 +4,7 @@ import { JWT_SECRET } from '../config.js';
 // Token estático por defecto (tu token actual)eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9
 
 
-const DEFAULT_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwidXN1YXJpbyI6Im1hcml0emEiLCJjb3JyZW8iOiJtaWNvcnJlb0Bkb21pbmlvLmNvbSIsImlhdCI6MTc2MzA3ODI3NSwiZXhwIjoxNzYzMDg1NDc1fQ.dxdkYkUM1OwGy0C0LEm24vI46Lp4EDC_It60IoMnq98";
+const DEFAULT_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwidXN1YXJpbyI6Im1hcml0emEiLCJjb3JyZW8iOiJtaWNvcnJlb0Bkb21pbmlvLmNvbSIsImlhdCI6MTc2MzA3ODgwMiwiZXhwIjoxNzYzMDg2MDAyfQ.9Ltq-_hsbg3Yz_W6fhOPlgAmno4-8lP0Hi2Avi0b7uk";
 
 export const verifyToken = async (req, res, next) => {
     let token;
